@@ -36,10 +36,17 @@ class Football(object):
         self.api_key = api_key
 
     def competitions(self):
+        """
+        Returns a dictionary containing all the competitions available.
+        """
         competitions = requests.get(f"{self.API_URL}competitions/").json()
         return competitions
 
     def teams(self, competition_id):
+        """
+        Returns a dictionary containing a list with all the teams in the given
+        competition.
+        """
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
@@ -50,6 +57,10 @@ class Football(object):
         return teams
 
     def table(self, competition_id):
+        """
+        Returns a dictionary containing a list with the competition's league
+        table, sorted first to last.
+        """
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
@@ -60,6 +71,10 @@ class Football(object):
         return table
 
     def competition_fixtures(self, competition_id):
+        """
+        Returns a dictionary containing a list with all the fixtures in the
+        given competition.
+        """
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
@@ -70,22 +85,42 @@ class Football(object):
         return fixtures
 
     def fixtures(self):
+        """
+        Returns a dictionary containing a list with all the fixtures across
+        all competitions.
+        """
         fixtures = requests.get(f"{self.API_URL}fixtures/").json()
         return fixtures
 
     def fixture(self, fixture_id):
+        """
+        Returns a dictionary containing the fixture with the given id.
+        """
         fixture = requests.get(f"{self.API_URL}fixtures/{fixture_id}").json()
         return fixture
 
     def team_fixtures(self, team_id):
+        """
+        Returns a dictionary containing a list with all the fixtures of the
+        team with the given id.
+        """
         fixtures = requests.get(
             f"{self.API_URL}teams/{team_id}/fixtures").json()
         return fixtures
 
     def team(self, team_id):
+        """
+        Returns a dictionary containing the team's name, code, short name,
+        squad market value and crest.
+        """
         team = requests.get(f"{self.API_URL}teams/{team_id}").json()
         return team
 
     def players(self, team_id):
+        """
+        Returns a dictionary containing a list of dictionaries of the team's
+        players. These dictionaries contain the player's name, position,
+        contract expiration date and market value.
+        """
         players = requests.get(f"{self.API_URL}teams/{team_id}/players").json()
         return players
