@@ -1,12 +1,21 @@
+"""
+Contains unit tests for all functions in football.py.
+"""
 import os
 import unittest
 from football import Football
 
 
 class TestFootball(unittest.TestCase):
+    """
+    Class for unit testing football.py.
+    """
     football = Football(os.environ["FOOTBALL_API_KEY"])
 
     def test_competitions(self):
+        """
+        Tests for the football.competition function.
+        """
         # General tests
         competitions = self.football.competitions()
         self.assertIsInstance(competitions, list)
@@ -23,6 +32,9 @@ class TestFootball(unittest.TestCase):
         self.assertRaises(ValueError, self.football.competitions, "abc")
 
     def test_teams(self):
+        """
+        Tests for the football.teams function.
+        """
         # General tests
         teams = self.football.teams(445)
         self.assertIsInstance(teams, dict)
@@ -31,6 +43,9 @@ class TestFootball(unittest.TestCase):
         self.assertEqual(teams["count"], len(teams["teams"]))
 
     def test_table(self):
+        """
+        Tests for the football.table function.
+        """
         # General tests
         table = self.football.table(445)
         self.assertIsInstance(table, dict)
@@ -43,6 +58,9 @@ class TestFootball(unittest.TestCase):
         self.assertRaises(ValueError, self.football.table, 445, "abc")
 
     def test_competition_fixtures(self):
+        """
+        Tests for the football.competition_fixtures function.
+        """
         # General tests
         competition_fixtures = self.football.competition_fixtures(445)
         self.assertIsInstance(competition_fixtures, dict)
@@ -58,6 +76,9 @@ class TestFootball(unittest.TestCase):
             self.football.competition_fixtures(445, time_frame="n38"))
 
     def test_fixtures(self):
+        """
+        Tests for the football.fixtures function.
+        """
         # General tests
         fixtures = self.football.fixtures()
         self.assertIsInstance(fixtures, dict)
@@ -72,9 +93,15 @@ class TestFootball(unittest.TestCase):
             self.football.competition_fixtures(445, matchday=38)["fixtures"])
 
     def test_fixture(self):
+        """
+        Tests for the football.fixture function.
+        """
         pass
 
     def test_team_fixtures(self):
+        """
+        Tests for the football.team_fixtures function.
+        """
         # General tests
         team_fixtures = self.football.team_fixtures(66)
         self.assertIsInstance(team_fixtures, dict)
@@ -92,6 +119,9 @@ class TestFootball(unittest.TestCase):
             ValueError, self.football.team_fixtures, 66, venue="abc")
 
     def test_team(self):
+        """
+        Tests for the football.team function.
+        """
         # General tests
         team = self.football.team(66)
         self.assertIsInstance(team, dict)
@@ -100,6 +130,9 @@ class TestFootball(unittest.TestCase):
         self.assertEqual(team["shortName"], "ManU")
 
     def test_players(self):
+        """
+        Tests for the football.players function.
+        """
         # General tests
         players = self.football.players(66)
         self.assertIsInstance(players, dict)
@@ -107,6 +140,9 @@ class TestFootball(unittest.TestCase):
         self.assertEqual(len(players["players"]), players["count"])
 
     def test__generate_url(self):
+        """
+        Tests for the football._generate_url function.
+        """
         # General tests
         url = self.football._generate_url("competitions")
         self.assertEqual(url, "http://api.football-data.org/v1/competitions/")
