@@ -71,9 +71,6 @@ class TestFootball(unittest.TestCase):
         # Test with query parameters
         self.assertRaises(
             ValueError, self.football.competition_fixtures, 445, "abc")
-        self.assertEqual(
-            self.football.competition_fixtures(445, matchday=38),
-            self.football.competition_fixtures(445, time_frame="n38"))
 
     def test_fixtures(self):
         """
@@ -88,9 +85,6 @@ class TestFootball(unittest.TestCase):
         # Test with query parameters
         self.assertRaises(ValueError, self.football.fixtures, time_frame="abc")
         self.assertRaises(ValueError, self.football.fixtures, league_code=123)
-        self.assertEqual(
-            self.football.fixtures(league_code="PL")["fixtures"],
-            self.football.competition_fixtures(445, matchday=38)["fixtures"])
 
     def test_fixture(self):
         """
