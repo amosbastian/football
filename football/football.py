@@ -1,8 +1,9 @@
-import json
-import os
+"""
+Contains the Football class used to interact with the API.
+"""
 import re
-import requests
 import urllib.parse
+import requests
 
 LEAGUE_CODE = {
     "BSA": 444,
@@ -32,16 +33,14 @@ class Football(object):
 
     API_URL = "http://api.football-data.org/v1/"
 
-    def __init__(self, api_key):
+    def __init__(self, api_key=None):
         """
         Initialise a new instance of the Football class.
         """
         self.api_key = api_key
-        self.headers = {
-            "X-Auth-Token": self.api_key
-        }
+        self.headers = {"X-Auth-Token": self.api_key}
 
-    def competitions(self, season=""):
+    def competitions(self, season=None):
         """
         Returns a dictionary containing all the competitions available.
         """
@@ -51,9 +50,9 @@ class Football(object):
             pattern = re.compile(r"\d\d\d\d")
             if not pattern.match(season):
                 raise ValueError("season is invalid.")
+            season = {"season": season}
 
-        # Generate URL and return
-        url = self._generate_url("competitions", {"season": season})
+        url = self._generate_url("competitions", season)
         competitions = requests.get(url, headers=self.headers).json()
         return competitions
 
@@ -66,15 +65,14 @@ class Football(object):
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
-            except Exception as error:
+            except KeyError as error:
                 return error
 
-        # Generate URL and return
         url = self._generate_url(f"competitions/{competition_id}/teams")
         teams = requests.get(url, headers=self.headers).json()
         return teams
 
-    def table(self, competition_id, matchday=""):
+    def table(self, competition_id, matchday=None):
         """
         Returns a dictionary containing a list with the competition's league
         table, sorted first to last.
@@ -83,22 +81,24 @@ class Football(object):
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
-            except Exception as error:
+            except KeyError as error:
                 return error
+
         # Error checking for query parameter matchday
         if matchday:
             matchday = str(matchday)
             pattern = re.compile(r"\d+")
             if not pattern.match(matchday):
                 raise ValueError("matchday is invalid.")
-        # Generate URL and return
+            matchday = {"matchday": matchday}
+
         url = self._generate_url(
-            f"competitions/{competition_id}/leagueTable",
-            {"matchday": matchday})
+            f"competitions/{competition_id}/leagueTable", matchday)
         table = requests.get(url, headers=self.headers).json()
         return table
 
-    def competition_fixtures(self, competition_id, matchday="", time_frame=""):
+    def competition_fixtures(self, competition_id, matchday=None,
+                             time_frame=None):
         """
         Returns a dictionary containing a list with all the fixtures in the
         given competition.
@@ -107,15 +107,17 @@ class Football(object):
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
-            except Exception as error:
+            except KeyError as error:
                 return error
 
+        query_params = {}
         # Error checking for query parameter matchday
         if matchday:
             matchday = str(matchday)
             pattern = re.compile(r"\d+")
             if not pattern.match(matchday):
                 raise ValueError("matchday is invalid.")
+            query_params["matchday"] = matchday
 
         # Error checking for query parameter time_frame
         if time_frame:
@@ -123,32 +125,34 @@ class Football(object):
             pattern = re.compile(r"p|n[1-9]{1,2}")
             if not pattern.match(time_frame):
                 raise ValueError("time_frame is invalid.")
+            query_params["timeFrame"] = time_frame
 
         url = self._generate_url(
-            f"competitions/{competition_id}/fixtures",
-            {"matchday": matchday, "timeFrame": time_frame})
+            f"competitions/{competition_id}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
         return fixtures
 
-    def fixtures(self, time_frame="", league_code=""):
+    def fixtures(self, time_frame=None, league_code=None):
         """
         Returns a dictionary containing a list with all the fixtures across
         all competitions.
         """
+        query_params = {}
         # Error checking for query parameter time_frame
         if time_frame:
             time_frame = str(time_frame)
             pattern = re.compile(r"p|n[1-9]{1,2}")
             if not pattern.match(time_frame):
                 raise ValueError("time_frame is invalid.")
+            query_params["timeFrame"] = time_frame
 
         # Error checking for query parameter league_code
         if league_code:
             if league_code not in LEAGUE_CODE.keys():
                 raise ValueError("league_code is invalid.")
+            query_params["league"] = league_code
 
-        url = self._generate_url(
-            "fixtures", {"timeFrame": time_frame, "league": league_code})
+        url = self._generate_url("fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
         return fixtures
 
@@ -160,17 +164,19 @@ class Football(object):
         fixture = requests.get(url, headers=self.headers).json()
         return fixture
 
-    def team_fixtures(self, team_id, season="", time_frame="", venue=""):
+    def team_fixtures(self, team_id, season=None, time_frame=None, venue=None):
         """
         Returns a dictionary containing a list with all the fixtures of the
         team with the given id.
         """
+        query_params = {}
         # Error checking for query parameter season
         if season:
             season = str(season)
             pattern = re.compile(r"\d\d\d\d")
             if not pattern.match(season):
                 raise ValueError("season is invalid.")
+            query_params["season"] = season
 
         # Error checking for query parameter time_frame
         if time_frame:
@@ -178,15 +184,15 @@ class Football(object):
             pattern = re.compile(r"p|n[1-9]{1,2}")
             if not pattern.match(time_frame):
                 raise ValueError("time_frame is invalid.")
+            query_params["timeFrame"] = time_frame
 
         # Error checking for query parameter venue
         if venue:
             if venue not in ("home", "away"):
                 raise ValueError("venue is invalid.")
+            query_params["venue"] = venue
 
-        url = self._generate_url(
-            f"teams/{team_id}/fixtures",
-            {"season": season, "timeFrame": time_frame, "venue": venue})
+        url = self._generate_url(f"teams/{team_id}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
         return fixtures
 
