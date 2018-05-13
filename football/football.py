@@ -1,4 +1,6 @@
 import json
+import os
+import re
 import requests
 import urllib.parse
 
@@ -35,12 +37,24 @@ class Football(object):
         Initialise a new instance of the Football class.
         """
         self.api_key = api_key
+        self.headers = {
+            "X-Auth-Token": self.api_key
+        }
 
-    def competitions(self):
+    def competitions(self, season=""):
         """
         Returns a dictionary containing all the competitions available.
         """
-        competitions = requests.get(f"{self.API_URL}competitions/").json()
+        # Error checking for query parameter season
+        if season:
+            season = str(season)
+            pattern = re.compile(r"\d\d\d\d")
+            if not pattern.match(season):
+                raise ValueError("season is invalid.")
+
+        # Generate URL and return
+        url = self._generate_url("competitions", {"season": season})
+        competitions = requests.get(url, headers=self.headers).json()
         return competitions
 
     def teams(self, competition_id):
@@ -48,65 +62,132 @@ class Football(object):
         Returns a dictionary containing a list with all the teams in the given
         competition.
         """
+        # Allow users to use both id or name
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
             except Exception as error:
                 return error
-        teams = requests.get(
-            f"{self.API_URL}competitions/{competition_id}/teams").json()
+
+        # Generate URL and return
+        url = self._generate_url(f"competitions/{competition_id}/teams")
+        teams = requests.get(url, headers=self.headers).json()
         return teams
 
-    def table(self, competition_id):
+    def table(self, competition_id, matchday=""):
         """
         Returns a dictionary containing a list with the competition's league
         table, sorted first to last.
         """
+        # Allow users to use both id or name
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
             except Exception as error:
                 return error
-        table = requests.get(
-            f"{self.API_URL}competitions/{competition_id}/leagueTable").json()
+        # Error checking for query parameter matchday
+        if matchday:
+            matchday = str(matchday)
+            pattern = re.compile(r"\d+")
+            if not pattern.match(matchday):
+                raise ValueError("matchday is invalid.")
+        # Generate URL and return
+        url = self._generate_url(
+            f"competitions/{competition_id}/leagueTable",
+            {"matchday": matchday})
+        table = requests.get(url, headers=self.headers).json()
         return table
 
-    def competition_fixtures(self, competition_id):
+    def competition_fixtures(self, competition_id, matchday="", time_frame=""):
         """
         Returns a dictionary containing a list with all the fixtures in the
         given competition.
         """
+        # Allow users to use both id or name
         if isinstance(competition_id, str):
             try:
                 competition_id = LEAGUE_CODE[competition_id]
             except Exception as error:
                 return error
-        fixtures = requests.get(
-            f"{self.API_URL}competitions/{competition_id}/fixtures").json()
+
+        # Error checking for query parameter matchday
+        if matchday:
+            matchday = str(matchday)
+            pattern = re.compile(r"\d+")
+            if not pattern.match(matchday):
+                raise ValueError("matchday is invalid.")
+
+        # Error checking for query parameter time_frame
+        if time_frame:
+            time_frame = str(time_frame)
+            pattern = re.compile(r"p|n[1-9]{1,2}")
+            if not pattern.match(time_frame):
+                raise ValueError("time_frame is invalid.")
+
+        url = self._generate_url(
+            f"competitions/{competition_id}/fixtures",
+            {"matchday": matchday, "timeFrame": time_frame})
+        fixtures = requests.get(url, headers=self.headers).json()
         return fixtures
 
-    def fixtures(self):
+    def fixtures(self, time_frame="", league_code=""):
         """
         Returns a dictionary containing a list with all the fixtures across
         all competitions.
         """
-        fixtures = requests.get(f"{self.API_URL}fixtures/").json()
+        # Error checking for query parameter time_frame
+        if time_frame:
+            time_frame = str(time_frame)
+            pattern = re.compile(r"p|n[1-9]{1,2}")
+            if not pattern.match(time_frame):
+                raise ValueError("time_frame is invalid.")
+
+        # Error checking for query parameter league_code
+        if league_code:
+            if league_code not in LEAGUE_CODE.keys():
+                raise ValueError("league_code is invalid.")
+
+        url = self._generate_url(
+            "fixtures", {"timeFrame": time_frame, "league": league_code})
+        fixtures = requests.get(url, headers=self.headers).json()
         return fixtures
 
     def fixture(self, fixture_id):
         """
         Returns a dictionary containing the fixture with the given id.
         """
-        fixture = requests.get(f"{self.API_URL}fixtures/{fixture_id}").json()
+        url = self._generate_url(f"fixtures/{fixture_id}")
+        fixture = requests.get(url, headers=self.headers).json()
         return fixture
 
-    def team_fixtures(self, team_id):
+    def team_fixtures(self, team_id, season="", time_frame="", venue=""):
         """
         Returns a dictionary containing a list with all the fixtures of the
         team with the given id.
         """
-        fixtures = requests.get(
-            f"{self.API_URL}teams/{team_id}/fixtures").json()
+        # Error checking for query parameter season
+        if season:
+            season = str(season)
+            pattern = re.compile(r"\d\d\d\d")
+            if not pattern.match(season):
+                raise ValueError("season is invalid.")
+
+        # Error checking for query parameter time_frame
+        if time_frame:
+            time_frame = str(time_frame)
+            pattern = re.compile(r"p|n[1-9]{1,2}")
+            if not pattern.match(time_frame):
+                raise ValueError("time_frame is invalid.")
+
+        # Error checking for query parameter venue
+        if venue:
+            if venue not in ("home", "away"):
+                raise ValueError("venue is invalid.")
+
+        url = self._generate_url(
+            f"teams/{team_id}/fixtures",
+            {"season": season, "timeFrame": time_frame, "venue": venue})
+        fixtures = requests.get(url, headers=self.headers).json()
         return fixtures
 
     def team(self, team_id):
@@ -114,7 +195,8 @@ class Football(object):
         Returns a dictionary containing the team's name, code, short name,
         squad market value and crest.
         """
-        team = requests.get(f"{self.API_URL}teams/{team_id}").json()
+        url = self._generate_url(f"teams/{team_id}")
+        team = requests.get(url, headers=self.headers).json()
         return team
 
     def players(self, team_id):
@@ -123,7 +205,8 @@ class Football(object):
         players. These dictionaries contain the player's name, position,
         contract expiration date and market value.
         """
-        players = requests.get(f"{self.API_URL}teams/{team_id}/players").json()
+        url = self._generate_url(f"teams/{team_id}/players")
+        players = requests.get(url, headers=self.headers).json()
         return players
 
     def _generate_url(self, action, query_params=None):
