@@ -66,5 +66,17 @@ class TestFootball(unittest.TestCase):
         self.assertIsInstance(players["players"], list)
         self.assertEqual(len(players["players"]), players["count"])
 
+    def test__generate_url(self):
+        url = self.football._generate_url("competitions")
+        self.assertEqual(url, "http://api.football-data.org/v1/competitions/")
+        url = self.football._generate_url("competitions", {"season": 2015})
+        self.assertEqual(
+            url, "http://api.football-data.org/v1/competitions/?season=2015")
+        url = self.football._generate_url(
+            "competitions/445/fixtures", {"matchday": 1, "timeFrame": "n14"})
+        self.assertEqual(url, ("http://api.football-data.org/v1/competitions/"
+                               "445/fixtures?matchday=1&timeFrame=n14"))
+
+
 if __name__ == '__main__':
     unittest.main()

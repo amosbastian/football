@@ -1,5 +1,6 @@
 import json
 import requests
+import urllib.parse
 
 LEAGUE_CODE = {
     "BSA": 444,
@@ -124,3 +125,18 @@ class Football(object):
         """
         players = requests.get(f"{self.API_URL}teams/{team_id}/players").json()
         return players
+
+    def _generate_url(self, action, query_params=None):
+        """
+        Generates a URL for the given action, with optional query parameters
+        that can be used to filter the response.
+        """
+        if action == "competitions" or action == "fixtures":
+            action += "/"
+
+        if query_params:
+            query_params = urllib.parse.urlencode(query_params)
+            action = f"{action}?{query_params}"
+
+        url = urllib.parse.urljoin(self.API_URL, action)
+        return url
