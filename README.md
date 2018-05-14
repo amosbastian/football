@@ -9,7 +9,7 @@ A Python wrapper around the [football-data API](https://www.football-data.org).
 
 ### Installing
 
-The recommended way of install `football` is with pip
+The recommended way to install `football` is with pip
 
 ```bash
 pip install football
@@ -31,7 +31,7 @@ pip install -e .
 
 ### Usage
 
-Currently the way to use `football` is to instantiate a `Football` class using your API key (can also be used without)
+Currently the way to use `football` is to instantiate a `Football` class using your API key (can also be used without), which can be request [here](https://www.football-data.org/client/register)
 
 ```python
 from football import Football
