@@ -105,9 +105,9 @@ See also the list of [contributors](https://github.com/amosbastian/football/grap
 
 ## Changelog
 
-#### 0.1.0 - 2018-05-14
+#### 0.1.1 - 2018-05-14
 ##### Added
-- Initial release - contains functions for each (sub) resource of the football-data API.
+- Initial release - contains functions for each (sub) resource of the football-data API, including filtering.
 
 ## License
 
