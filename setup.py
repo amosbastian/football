@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="football",
-    version="0.1.0",
-    packages=["football"],
+    version="0.1.1",
+    packages=find_packages(),
     description="A Python wrapper around the football-data API.",
     url="https://github.com/amosbastian/football",
     author="Amos Bastian",
