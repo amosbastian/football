@@ -4,6 +4,7 @@ Contains unit tests for all functions in football.py.
 import os
 import unittest
 from football import Football
+from football.models.competition import Competition
 
 
 class TestFootball(unittest.TestCase):
@@ -14,22 +15,43 @@ class TestFootball(unittest.TestCase):
 
     def test_competitions(self):
         """
-        Tests for the football.competition function.
+        Tests for the football.competitions function.
         """
         # General tests
         competitions = self.football.competitions()
-        self.assertIsInstance(competitions, list)
-        self.assertEqual(competitions[0]["id"], 444)
-        self.assertEqual(competitions[0]["year"], "2017")
-        self.assertEqual(competitions[0]["league"], "BSA")
-        self.assertEqual(competitions[0]["numberOfMatchdays"], 38)
-        self.assertEqual(competitions[0]["numberOfTeams"], 20)
-        self.assertEqual(competitions[0]["numberOfGames"], 380)
+        competition = competitions[0]
+        self.assertIsInstance(competition, Competition)
+        self.assertEqual(competition.id, 444)
+        self.assertEqual(competition.year, "2017")
+        self.assertEqual(competition.shortname, "BSA")
+        self.assertEqual(competition.number_matchdays, 38)
+        self.assertEqual(competition.number_teams, 20)
+        self.assertEqual(competition.number_games, 380)
 
         # Test with query parameters
         competitions = self.football.competitions(2015)
-        self.assertEqual(competitions[0]["year"], "2015")
+        competition = competitions[0]
+        self.assertEqual(competition.year, "2015")
         self.assertRaises(ValueError, self.football.competitions, "abc")
+
+    def test_competition(self):
+        """
+        Tests for the football.competition function.
+        """
+        # General tests
+        competition = self.football.competition(444)
+        self.assertIsInstance(competition, Competition)
+        self.assertEqual(competition.id, 444)
+        self.assertEqual(competition.year, "2017")
+        self.assertEqual(competition.shortname, "BSA")
+        self.assertEqual(competition.number_matchdays, 38)
+        self.assertEqual(competition.number_teams, 20)
+        self.assertEqual(competition.number_games, 380)
+
+        # Tests with query parameters
+        self.assertRaises(ValueError, self.football.competition, 444, "2015")
+        competition = self.football.competition(394, "2015")
+        self.assertEqual(competition.year, "2015")
 
     def test_teams(self):
         """
