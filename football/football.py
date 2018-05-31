@@ -5,6 +5,8 @@ import re
 import urllib.parse
 import requests
 
+from .models.competition import Competition
+
 LEAGUE_CODE = {
     "BSA": 444,
     "PL": 445,
@@ -42,7 +44,8 @@ class Football(object):
 
     def competitions(self, season=None):
         """
-        Returns a dictionary containing all the competitions available.
+        Returns a list of Competition objects of all the available
+        competitions.
         """
         # Error checking for query parameter season
         if season:
@@ -54,7 +57,28 @@ class Football(object):
 
         url = self._generate_url("competitions", season)
         competitions = requests.get(url, headers=self.headers).json()
+        competitions = [Competition(competition)
+                        for competition in competitions]
         return competitions
+
+    def competition(self, competition_id, season=None):
+        """
+        Returns a Competition object of competition with the given id.
+        """
+        # Error checking for query parameter season
+        if season:
+            # Do it this way, because API does not support other method
+            competitions = self.competitions(season)
+            for competition in competitions:
+                if competition.id == competition_id:
+                    return competition
+
+            raise ValueError("could not find competition.")
+
+        url = self._generate_url(f"competitions/{competition_id}")
+        competition = requests.get(url, headers=self.headers).json()
+        competition = Competition(competition)
+        return competition
 
     def teams(self, competition_id):
         """
