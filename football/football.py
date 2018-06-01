@@ -6,6 +6,7 @@ import urllib.parse
 import requests
 
 from .models.competition import Competition
+from .models.fixture import Fixture
 
 LEAGUE_CODE = {
     "BSA": 444,
@@ -154,7 +155,7 @@ class Football(object):
         url = self._generate_url(
             f"competitions/{competition_id}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
-        return fixtures
+        return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
     def fixtures(self, time_frame=None, league_code=None):
         """
@@ -178,7 +179,7 @@ class Football(object):
 
         url = self._generate_url("fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
-        return fixtures
+        return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
     def fixture(self, fixture_id):
         """
@@ -186,7 +187,7 @@ class Football(object):
         """
         url = self._generate_url(f"fixtures/{fixture_id}")
         fixture = requests.get(url, headers=self.headers).json()
-        return fixture
+        return Fixture(fixture["fixture"])
 
     def team_fixtures(self, team_id, season=None, time_frame=None, venue=None):
         """
@@ -218,7 +219,7 @@ class Football(object):
 
         url = self._generate_url(f"teams/{team_id}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
-        return fixtures
+        return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
     def team(self, team_id):
         """
