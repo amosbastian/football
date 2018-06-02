@@ -1,4 +1,5 @@
 import requests
+from .fixture import Fixture
 
 
 class Competition():
@@ -25,8 +26,8 @@ class Competition():
         """
         Returns all current fixtures of the competition.
         """
-        response = requests.get(self._fixtures_url)
-        return response.json()
+        response = requests.get(self._fixtures_url).json()
+        return [Fixture(fixture) for fixture in response]
 
     def teams(self):
         """
