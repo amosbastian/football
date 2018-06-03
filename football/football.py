@@ -8,6 +8,7 @@ import requests
 from .models.competition import Competition
 from .models.fixture import Fixture
 from .models.player import Player
+from .models.team import Team
 
 LEAGUE_CODE = {
     "BSA": 444,
@@ -96,7 +97,7 @@ class Football(object):
 
         url = self._generate_url(f"competitions/{competition_id}/teams")
         teams = requests.get(url, headers=self.headers).json()
-        return teams
+        return [Team(team) for team in teams["teams"]]
 
     def table(self, competition_id, matchday=None):
         """
@@ -224,12 +225,12 @@ class Football(object):
 
     def team(self, team_id):
         """
-        Returns a dictionary containing the team's name, code, short name,
-        squad market value and crest.
+        Returns a Team object containing the team's name, code, short name,
+        squad market value, badge, players and fixtures.
         """
         url = self._generate_url(f"teams/{team_id}")
         team = requests.get(url, headers=self.headers).json()
-        return team
+        return Team(team)
 
     def players(self, team_id):
         """
