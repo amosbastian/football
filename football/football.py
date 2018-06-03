@@ -8,6 +8,7 @@ import requests
 from .models.competition import Competition
 from .models.fixture import Fixture
 from .models.player import Player
+from .models.table import Table
 from .models.team import Team
 
 LEAGUE_CODE = {
@@ -122,7 +123,7 @@ class Football(object):
         url = self._generate_url(
             f"competitions/{competition_id}/leagueTable", matchday)
         table = requests.get(url, headers=self.headers).json()
-        return table
+        return Table(table)
 
     def competition_fixtures(self, competition_id, matchday=None,
                              time_frame=None):
