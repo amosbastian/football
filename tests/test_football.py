@@ -151,9 +151,9 @@ class TestFootball(unittest.TestCase):
         """
         # General tests
         players = self.football.players(66)
-        self.assertIsInstance(players, dict)
-        self.assertIsInstance(players["players"], list)
-        self.assertEqual(len(players["players"]), players["count"])
+        self.assertIsInstance(players, list)
+        player = players[0]
+        self.assertEqual(player.name, "Romelu Lukaku")
 
     def test__generate_url(self):
         """
