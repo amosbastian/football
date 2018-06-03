@@ -6,6 +6,8 @@ import unittest
 from football import Football
 from football.models.competition import Competition
 from football.models.fixture import Fixture
+from football.models.player import Player
+from football.models.team import Team
 
 
 class TestFootball(unittest.TestCase):
@@ -60,10 +62,14 @@ class TestFootball(unittest.TestCase):
         """
         # General tests
         teams = self.football.teams(445)
-        self.assertIsInstance(teams, dict)
-        self.assertEqual(teams["count"], 20)
-        self.assertIsInstance(teams["teams"], list)
-        self.assertEqual(teams["count"], len(teams["teams"]))
+        self.assertIsInstance(teams, list)
+        team_names = [team.name for team in teams]
+        team = teams[0]
+        self.assertIsInstance(team, Team)
+        self.assertEqual(team.name, "Arsenal FC")
+        self.assertIsInstance(team.fixtures[0], Fixture)
+        self.assertIsInstance(team.players[0], Player)
+        self.assertTrue("Manchester United FC" in team_names)
 
     def test_table(self):
         """
@@ -140,10 +146,10 @@ class TestFootball(unittest.TestCase):
         """
         # General tests
         team = self.football.team(66)
-        self.assertIsInstance(team, dict)
-        self.assertEqual(team["name"], "Manchester United FC")
-        self.assertEqual(team["code"], "MUFC")
-        self.assertEqual(team["shortName"], "ManU")
+        self.assertIsInstance(team, Team)
+        self.assertEqual(team.name, "Manchester United FC")
+        self.assertEqual(team.code, "MUFC")
+        self.assertEqual(team.shortname, "ManU")
 
     def test_players(self):
         """
