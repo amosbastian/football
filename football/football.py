@@ -7,6 +7,7 @@ import requests
 
 from .models.competition import Competition
 from .models.fixture import Fixture
+from .models.player import Player
 
 LEAGUE_CODE = {
     "BSA": 444,
@@ -238,7 +239,7 @@ class Football(object):
         """
         url = self._generate_url(f"teams/{team_id}/players")
         players = requests.get(url, headers=self.headers).json()
-        return players
+        return [Player(player, team_id) for player in players["players"]]
 
     def _generate_url(self, action, query_params=None):
         """
