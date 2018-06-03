@@ -7,6 +7,8 @@ from football import Football
 from football.models.competition import Competition
 from football.models.fixture import Fixture
 from football.models.player import Player
+from football.models.table import Standing
+from football.models.table import Table
 from football.models.team import Team
 
 
@@ -77,13 +79,14 @@ class TestFootball(unittest.TestCase):
         """
         # General tests
         table = self.football.table(445)
-        self.assertIsInstance(table, dict)
-        self.assertIsInstance(table["standing"], list)
-        self.assertEqual(len(table["standing"]), 20)
+        self.assertIsInstance(table, Table)
+        self.assertIsInstance(table.standing, list)
+        standing = table.standing
+        self.assertIsInstance(standing[0], Standing)
 
         # Test with query parameters
         table = self.football.table(445, 1)
-        self.assertEqual(table["matchday"], 1)
+        self.assertEqual(table.matchday, 1)
         self.assertRaises(ValueError, self.football.table, 445, "abc")
 
     def test_competition_fixtures(self):
