@@ -2,6 +2,7 @@ import requests
 
 from .fixture import Fixture
 from .player import Player
+from ..utils import headers
 
 
 class Team():
@@ -26,13 +27,19 @@ class Team():
         """
         Returns a list of Player objects.
         """
-        response = requests.get(self.players_url).json()
-        return [Player(player, self.team_id, self.name)
-                for player in response["players"]]
+        response = requests.get(self.players_url, headers=headers()).json()
+        try:
+            return [Player(player, self.team_id, self.name)
+                    for player in response["players"]]
+        except KeyError:
+            return []
 
     def _fixtures(self):
         """
         Returns a list of Fixture objects.
         """
-        response = requests.get(self.fixtures_url).json()
-        return [Fixture(fixture) for fixture in response["fixtures"]]
+        response = requests.get(self.fixtures_url, headers=headers()).json()
+        try:
+            return [Fixture(fixture) for fixture in response["fixtures"]]
+        except KeyError:
+            return []

@@ -1,15 +1,17 @@
 """
 Contains the Football class used to interact with the API.
 """
+import os
 import re
-import urllib.parse
 import requests
+import urllib.parse
 
 from .models.competition import Competition
 from .models.fixture import Fixture
 from .models.player import Player
 from .models.table import Table
 from .models.team import Team
+from .utils import headers
 
 LEAGUE_CODE = {
     "BSA": 444,
@@ -43,8 +45,16 @@ class Football(object):
         """
         Initialise a new instance of the Football class.
         """
+        if not api_key:
+            if "FOOTBALL_API_KEY" in os.environ:
+                api_key = os.environ["FOOTBALL_API_KEY"]
+            else:
+                raise ValueError(
+                    "FOOTBALL_API_KEY environment variable not set or no "
+                    "API key given.")
+
         self.api_key = api_key
-        self.headers = {"X-Auth-Token": self.api_key}
+        self.headers = headers()
 
     def competitions(self, season=None):
         """

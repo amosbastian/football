@@ -1,6 +1,7 @@
 import requests
 
 from dateutil.parser import parse
+from ..utils import headers
 
 
 class Player():
@@ -31,5 +32,6 @@ class Player():
         """
         Returns the player's team.
         """
-        response = requests.get(f"{self.API_URL}teams/{self.team_id}").json()
+        response = requests.get(
+            f"{self.API_URL}teams/{self.team_id}", headers=headers()).json()
         return response["name"]
