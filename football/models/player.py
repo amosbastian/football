@@ -35,3 +35,6 @@ class Player():
         response = requests.get(
             f"{self.API_URL}teams/{self.team_id}", headers=headers()).json()
         return response["name"]
+
+    def __str__(self):
+        return (f"{self.number} - {self.name} - {self.position} - {self.team}")

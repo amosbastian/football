@@ -28,18 +28,15 @@ class Team():
         Returns a list of Player objects.
         """
         response = requests.get(self.players_url, headers=headers()).json()
-        try:
-            return [Player(player, self.team_id, self.name)
-                    for player in response["players"]]
-        except KeyError:
-            return []
+        return [Player(player, self.team_id, self.name)
+                for player in response["players"]]
 
     def _fixtures(self):
         """
         Returns a list of Fixture objects.
         """
         response = requests.get(self.fixtures_url, headers=headers()).json()
-        try:
-            return [Fixture(fixture) for fixture in response["fixtures"]]
-        except KeyError:
-            return []
+        return [Fixture(fixture) for fixture in response["fixtures"]]
+
+    def __str__(self):
+        return self.name

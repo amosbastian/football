@@ -18,6 +18,7 @@ class Fixture():
         self.status = fixture["status"]
         self.winner = self._winner()
 
+        # Get result depending if required data available
         if "halfTime" in fixture["result"].keys():
             self.away_goals_ht = fixture["result"]["halfTime"]["goalsAwayTeam"]
             self.home_goals_ht = fixture["result"]["halfTime"]["goalsHomeTeam"]
@@ -34,3 +35,10 @@ class Fixture():
         elif self.away_goals > self.home_goals:
             return self.away_team
         return None
+
+    def __str__(self):
+        if self.winner:
+            return (f"{self.home_team} {self.home_goals}-{self.away_goals} "
+                    f"{self.away_team} - {self.date}")
+        else:
+            return f"{self.home_team} vs. {self.away_team} - {self.date}"
