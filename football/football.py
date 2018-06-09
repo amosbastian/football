@@ -73,6 +73,7 @@ class Football(object):
         competitions = requests.get(url, headers=self.headers).json()
         competitions = [Competition(competition)
                         for competition in competitions]
+
         return competitions
 
     def competition(self, competition_id, season=None):
@@ -92,12 +93,13 @@ class Football(object):
         url = self._generate_url(f"competitions/{competition_id}")
         competition = requests.get(url, headers=self.headers).json()
         competition = Competition(competition)
+
         return competition
 
     def teams(self, competition_id):
         """
-        Returns a dictionary containing a list with all the teams in the given
-        competition.
+        Returns a list of Team objects of teams that are playing in the
+        competition with the given ID.
         """
         # Allow users to use both id or name
         if isinstance(competition_id, str):
@@ -108,12 +110,13 @@ class Football(object):
 
         url = self._generate_url(f"competitions/{competition_id}/teams")
         teams = requests.get(url, headers=self.headers).json()
+
         return [Team(team) for team in teams["teams"]]
 
     def table(self, competition_id, matchday=None):
         """
-        Returns a dictionary containing a list with the competition's league
-        table, sorted first to last.
+        Returns a Table object made from the table of the competition with the
+        given ID on the given matchday.
         """
         # Allow users to use both id or name
         if isinstance(competition_id, str):
@@ -133,13 +136,14 @@ class Football(object):
         url = self._generate_url(
             f"competitions/{competition_id}/leagueTable", matchday)
         table = requests.get(url, headers=self.headers).json()
+
         return Table(table)
 
     def competition_fixtures(self, competition_id, matchday=None,
                              time_frame=None):
         """
-        Returns a dictionary containing a list with all the fixtures in the
-        given competition.
+        Returns a list of Fixture objects made from the fixtures of the
+        competition with the given ID, on the given matchday and/or time frame.
         """
         # Allow users to use both id or name
         if isinstance(competition_id, str):
@@ -168,12 +172,14 @@ class Football(object):
         url = self._generate_url(
             f"competitions/{competition_id}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
+
         return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
     def fixtures(self, time_frame=None, league_code=None):
         """
-        Returns a dictionary containing a list with all the fixtures across
-        all competitions.
+        Returns a list of Fixture objects made from the fixtures across either
+        all competitions or the league with the given code in the given time
+        frame.
         """
         query_params = {}
         # Error checking for query parameter time_frame
@@ -192,11 +198,12 @@ class Football(object):
 
         url = self._generate_url("fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
+
         return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
     def fixture(self, fixture_id):
         """
-        Returns a dictionary containing the fixture with the given id.
+        Returns a Fixture object of the fixture with the given ID.
         """
         url = self._generate_url(f"fixtures/{fixture_id}")
         fixture = requests.get(url, headers=self.headers).json()
@@ -204,8 +211,8 @@ class Football(object):
 
     def team_fixtures(self, team_id, season=None, time_frame=None, venue=None):
         """
-        Returns a dictionary containing a list with all the fixtures of the
-        team with the given id.
+        Returns a list of Fixture objects made from the fixtures of the team
+        with the given ID, in a certain season, time frame or venue.
         """
         query_params = {}
         # Error checking for query parameter season
@@ -232,12 +239,12 @@ class Football(object):
 
         url = self._generate_url(f"teams/{team_id}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
+
         return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
     def team(self, team_id):
         """
-        Returns a Team object containing the team's name, code, short name,
-        squad market value, badge, players and fixtures.
+        Returns a Team object made from the team with the given ID.
         """
         url = self._generate_url(f"teams/{team_id}")
         team = requests.get(url, headers=self.headers).json()
@@ -245,12 +252,12 @@ class Football(object):
 
     def players(self, team_id):
         """
-        Returns a dictionary containing a list of dictionaries of the team's
-        players. These dictionaries contain the player's name, position,
-        contract expiration date and market value.
+        Returns a list of Player objects made from players playing for the team
+        with the given ID.
         """
         url = self._generate_url(f"teams/{team_id}/players")
         players = requests.get(url, headers=self.headers).json()
+
         return [Player(player, team_id) for player in players["players"]]
 
     def _generate_url(self, action, query_params=None):
@@ -266,4 +273,5 @@ class Football(object):
             action = f"{action}?{query_params}"
 
         url = urllib.parse.urljoin(self.API_URL, action)
+
         return url
