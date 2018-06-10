@@ -68,7 +68,9 @@ fixtures = football.competition_fixtures("PL")
 fixtures = football.fixtures()
 ```
 ### Get a single fixture
-* Currently not working!
+```python
+fixture = football.fixture(159031)
+```
 ### Get all fixtures of a given team
 ```python
 # Get Manchester United's fixtures
@@ -91,11 +93,12 @@ Please read [CONTRIBUTING.md](https://github.com/amosbastian/football/blob/maste
 
 ## Roadmap
 
-* Create classes for each (sub) resource
+* ~~Create classes for each (sub) resource~~
 * Add helper functions
 * Improve the use of filters
 * Add utilities for team/league/competition codes, names etc.
-* ...
+* Create proper documentation
+* Include a CLI
 
 ## Authors
 
@@ -107,7 +110,16 @@ See also the list of [contributors](https://github.com/amosbastian/football/grap
 
 #### 0.1.1 - 2018-05-14
 ##### Added
-- Initial release - contains functions for each (sub) resource of the football-data API, including filtering.
+- Initial release - contains functions for each (sub) resource of the football-data API, including filtering
+
+#### 0.2.0 - 2018-06-10
+##### Updated
+- All sub resources are now classes including functions to call retrieve additional information
+- Team related functions can now use the name, shortname or code of the team instead of just its ID
+- Football functions use classes instead
+- Unit tests for each function changed to test respective classes
+##### Added
+- Helper functions for Table and Team classes
 
 ## License
 
