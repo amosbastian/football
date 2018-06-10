@@ -69,8 +69,13 @@ class TestFootball(unittest.TestCase):
         team = teams[0]
         self.assertIsInstance(team, Team)
         self.assertEqual(team.name, "Arsenal FC")
-        self.assertIsInstance(team.fixtures[0], Fixture)
-        self.assertIsInstance(team.players[0], Player)
+
+        # Get fixtures and players, test these
+        fixtures = team.fixtures()
+        players = team.players()
+
+        self.assertIsInstance(fixtures[0], Fixture)
+        self.assertIsInstance(players[0], Player)
         self.assertTrue("Manchester United FC" in team_names)
 
     def test_table(self):
