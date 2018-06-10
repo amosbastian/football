@@ -31,13 +31,13 @@ pip install -e .
 
 ### Usage
 
-Currently the way to use `football` is to instantiate a `Football` class using your API key (can also be used without), which can be request [here](https://www.football-data.org/client/register)
+Currently the way to use `football` is to instantiate a `Football` class using your API key by either passing it directly or setting the environment variable `FOOTBALL_API_KEY`, which can be requested [here](https://www.football-data.org/client/register)
 
 ```python
 from football import Football
 football = Football("your_api_key")
 
-manchester_united = football.team(66)
+manchester_united = football.team("Manchester United FC")
 ```
 
 The following (sub) resources are available
@@ -75,16 +75,19 @@ fixture = football.fixture(159031)
 ```python
 # Get Manchester United's fixtures
 fixtures = football.team_fixtures(66)
+fixtures = football.team_fixtures("MUFC")
 ```
 ### Get a team
 ```python
 # Get Manchester United
 team = football.team(66)
+team = football.team("Manchester United FC")
 ```
 ### Get all players of the given team
 ```python
 # Get Manchester United's players
-team = football.players(66)
+players = football.players(66)
+players = football.players("ManU")
 ```
 
 ## Contributing
