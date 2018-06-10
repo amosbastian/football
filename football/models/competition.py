@@ -18,7 +18,7 @@ class Competition():
 
         self.current_matchday = competition["currentMatchday"]
         self.id = competition["id"]
-        self.last_update = competition["lastUpdated"]
+        self.last_updated = competition["lastUpdated"]
         self.name = competition["caption"]
         self.number_games = competition["numberOfGames"]
         self.number_matchdays = competition["numberOfMatchdays"]
