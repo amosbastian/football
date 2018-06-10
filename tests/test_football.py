@@ -69,8 +69,13 @@ class TestFootball(unittest.TestCase):
         team = teams[0]
         self.assertIsInstance(team, Team)
         self.assertEqual(team.name, "Arsenal FC")
-        self.assertIsInstance(team.fixtures[0], Fixture)
-        self.assertIsInstance(team.players[0], Player)
+
+        # Get fixtures and players, test these
+        fixtures = team.fixtures()
+        players = team.players()
+
+        self.assertIsInstance(fixtures[0], Fixture)
+        self.assertIsInstance(players[0], Player)
         self.assertTrue("Manchester United FC" in team_names)
 
     def test_table(self):
@@ -143,6 +148,15 @@ class TestFootball(unittest.TestCase):
         self.assertRaises(
             ValueError, self.football.team_fixtures, 66, venue="abc")
 
+        # Test with team name, shortname and code
+        code_fixtures = self.football.team_fixtures("MUFC")
+        shortname_fixtures = self.football.team_fixtures("ManU")
+        name_fixtures = self.football.team_fixtures("Manchester United FC")
+
+        self.assertEqual(team_fixtures[0].winner, code_fixtures[0].winner)
+        self.assertEqual(team_fixtures[0].winner, shortname_fixtures[0].winner)
+        self.assertEqual(team_fixtures[0].winner, name_fixtures[0].winner)
+
     def test_team(self):
         """
         Tests for the football.team function.
@@ -154,6 +168,15 @@ class TestFootball(unittest.TestCase):
         self.assertEqual(team.code, "MUFC")
         self.assertEqual(team.shortname, "ManU")
 
+        # Test with team name, shortname and code
+        code_team = self.football.team("MUFC")
+        shortname_team = self.football.team("ManU")
+        name_team = self.football.team("Manchester United FC")
+
+        self.assertEqual(team.name, code_team.name)
+        self.assertEqual(team.name, shortname_team.name)
+        self.assertEqual(team.name, name_team.name)
+
     def test_players(self):
         """
         Tests for the football.players function.
@@ -163,6 +186,15 @@ class TestFootball(unittest.TestCase):
         self.assertIsInstance(players, list)
         player_names = [player.name for player in players]
         self.assertIn("Eric Bailly", player_names)
+
+        # Test with team name, shortname and code
+        code_players = self.football.players("MUFC")
+        shortname_players = self.football.players("ManU")
+        name_players = self.football.players("Manchester United FC")
+
+        self.assertEqual(players[0].name, code_players[0].name)
+        self.assertEqual(players[0].name, shortname_players[0].name)
+        self.assertEqual(players[0].name, name_players[0].name)
 
     def test__generate_url(self):
         """

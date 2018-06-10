@@ -22,13 +22,7 @@ class Player():
         self.team_id = team_id
         self.team_url = f"http://api.football-data.org/vi/teams/{team_id}"
 
-        # If team not given, retrieve name
-        if not team:
-            self.team = self._team()
-        else:
-            self.team = team
-
-    def _team(self):
+    def team(self):
         """
         Returns the player's team.
         """
