@@ -4,7 +4,8 @@ from collections import Counter
 from .fixture import Fixture
 from .player import Player
 from prettytable import PrettyTable
-from ..utils import headers, LEAGUE_CODE
+from ..utils import headers
+from ..constants import LEAGUE_CODE
 
 
 class Team():

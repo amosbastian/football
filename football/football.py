@@ -11,7 +11,8 @@ from .models.fixture import Fixture
 from .models.player import Player
 from .models.table import Table
 from .models.team import Team
-from .utils import headers, LEAGUE_CODE
+from .utils import headers
+from .constants import LEAGUE_CODE
 
 
 class Football(object):

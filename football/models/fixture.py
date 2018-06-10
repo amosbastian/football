@@ -1,4 +1,4 @@
-from ..utils import MAX_TEAM_NAME
+from ..constants import MAX_TEAM_NAME
 
 
 class Fixture():
