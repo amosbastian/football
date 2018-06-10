@@ -1,3 +1,4 @@
+from operator import attrgetter
 from prettytable import PrettyTable
 
 
@@ -12,6 +13,16 @@ class Table():
         self.matchday = table["matchday"]
         self.standing = [Standing(standing) for standing in table["standing"]]
 
+    def sort(self, column, reverse=False):
+        """
+        Sorts the table by the given column.
+        """
+        if not hasattr(self.standing[0], column):
+            raise ValueError(f"Can't sort table by given column: {column}")
+
+        self.standing = sorted(
+            self.standing, key=attrgetter(column), reverse=reverse)
+
     def __str__(self):
         """
         Use PrettyTable to represent the table when it is printed.
@@ -20,6 +31,9 @@ class Table():
         table = PrettyTable(
             ["#", "Team", "Played", "Won", "Drawn", "Lost", "For", "Against",
              "GD", "Points"])
+
+        # Align column left
+        table.align["Team"] = "l"
 
         # Add rows to the table
         for row in self.standing:

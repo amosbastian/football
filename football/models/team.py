@@ -1,8 +1,11 @@
 import requests
 
+from collections import Counter
 from .fixture import Fixture
 from .player import Player
+from prettytable import PrettyTable
 from ..utils import headers
+from ..constants import LEAGUE_CODE
 
 
 class Team():
@@ -37,6 +40,71 @@ class Team():
         """
         response = requests.get(self.fixtures_url, headers=headers()).json()
         return [Fixture(fixture) for fixture in response["fixtures"]]
+
+    def depth(self, JSON=False):
+        """
+        Returns an overview of the team's positional depth.
+        """
+        positions = [player.position for player in self.players]
+
+        if JSON:
+            return dict(Counter(positions))
+        else:
+            # Create table
+            table = PrettyTable(["Position", "#"])
+            table.align["Position"] = "l"
+
+            for position, amount in Counter(positions).items():
+                table.add_row([position, amount])
+
+            return table
+
+    def results(self, league_code=None, number=5):
+        """
+        Return a list of the team's results.
+        """
+        if league_code:
+            if league_code not in LEAGUE_CODE.keys():
+                raise KeyError("Given league code does not exist!")
+
+            competition_id = LEAGUE_CODE[league_code]
+
+            # Check fixture's competition ID and if it has already been played
+            results = [fixture for fixture in self.fixtures
+                       if fixture.competition_id == competition_id and
+                       fixture.winner]
+        else:
+            # Only check if fixture has already been played
+            results = [fixture for fixture in self.fixtures if fixture.winner]
+
+        if len(results) == 0:
+            raise ValueError("No results found for the given league code.")
+
+        return results[:number]
+
+    def upcoming_fixtures(self, league_code=None, number=5):
+        """
+        Return a list of the team's upcoming fixtures.
+        """
+        if league_code:
+            if league_code not in LEAGUE_CODE.keys():
+                raise KeyError("Given league code does not exist!")
+
+            competition_id = LEAGUE_CODE[league_code]
+
+            # Check fixture's competition ID and if it has already been played
+            results = [fixture for fixture in self.fixtures
+                       if fixture.competition_id == competition_id and
+                       not fixture.winner]
+        else:
+            # Only check if fixture has already been played
+            results = [fixture for fixture in self.fixtures
+                       if not fixture.winner]
+
+        if len(results) == 0:
+            raise ValueError("No fixtures found for the given league code.")
+
+        return results[:number]
 
     def __str__(self):
         return self.name

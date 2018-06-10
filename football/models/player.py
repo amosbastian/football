@@ -13,7 +13,7 @@ class Player():
 
     def __init__(self, player, team_id, team=None):
         self.contract_until = player["contractUntil"]
-        self.date_of_bith = parse(player["dateOfBirth"])
+        self.date_of_birth = parse(player["dateOfBirth"])
         self.market_value = player["marketValue"] 
         self.name = player["name"]
         self.nationality = player["nationality"]
@@ -37,4 +37,5 @@ class Player():
         return response["name"]
 
     def __str__(self):
-        return (f"{self.number} - {self.name} - {self.position} - {self.team}")
+        return (f"{self.number:2} - {self.name} - {self.position} - "
+                f"{self.team}")

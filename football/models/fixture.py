@@ -1,3 +1,6 @@
+from ..constants import MAX_TEAM_NAME
+
+
 class Fixture():
     """
     The Fixture class.
@@ -10,6 +13,7 @@ class Fixture():
 
         self.away_goals = fixture["result"]["goalsAwayTeam"]
         self.away_team = fixture["awayTeamName"]
+        self.competition_id = int(self._competition_url.split("/")[-1])
         self.date = fixture["date"]
         self.home_goals = fixture["result"]["goalsHomeTeam"]
         self.home_team = fixture["homeTeamName"]
@@ -38,7 +42,9 @@ class Fixture():
 
     def __str__(self):
         if self.winner:
-            return (f"{self.home_team} {self.home_goals}-{self.away_goals} "
-                    f"{self.away_team} - {self.date}")
+            return (f"{self.home_team:<{MAX_TEAM_NAME}} {self.home_goals}-"
+                    f"{self.away_goals} {self.away_team:>{MAX_TEAM_NAME}} - "
+                    f"{self.date}")
         else:
-            return f"{self.home_team} vs. {self.away_team} - {self.date}"
+            return (f"{self.home_team:<{MAX_TEAM_NAME}} vs. "
+                    f"{self.away_team:>{MAX_TEAM_NAME}} - {self.date}")
