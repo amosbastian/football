@@ -1,5 +1,6 @@
 from ..utils import MAX_TEAM_NAME
 
+
 class Fixture():
     """
     The Fixture class.
