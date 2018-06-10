@@ -12,7 +12,7 @@ from .models.player import Player
 from .models.table import Table
 from .models.team import Team
 from .utils import headers
-from .constants import LEAGUE_CODE
+from .constants import LEAGUE_CODE, TEAM_ID
 
 
 class Football(object):
@@ -77,32 +77,31 @@ class Football(object):
 
         return competition
 
-    def teams(self, competition_id):
+    def teams(self, competition):
         """
-        Returns a list of Team objects of teams that are playing in the
-        competition with the given ID.
+        Returns a list of Team objects of teams that are playing in the given
+        competition.
         """
         # Allow users to use both id or name
-        if isinstance(competition_id, str):
+        if isinstance(competition, str):
             try:
-                competition_id = LEAGUE_CODE[competition_id]
+                competition = LEAGUE_CODE[competition]
             except KeyError as error:
                 return error
 
-        url = self._generate_url(f"competitions/{competition_id}/teams")
+        url = self._generate_url(f"competitions/{competition}/teams")
         teams = requests.get(url, headers=self.headers).json()
 
         return [Team(team) for team in teams["teams"]]
 
-    def table(self, competition_id, matchday=None):
+    def table(self, competition, matchday=None):
         """
-        Returns a Table object made from the table of the competition with the
-        given ID on the given matchday.
+        Returns a Table object made from the table of the given competition.
         """
         # Allow users to use both id or name
-        if isinstance(competition_id, str):
+        if isinstance(competition, str):
             try:
-                competition_id = LEAGUE_CODE[competition_id]
+                competition = LEAGUE_CODE[competition]
             except KeyError as error:
                 return error
 
@@ -115,21 +114,21 @@ class Football(object):
             matchday = {"matchday": matchday}
 
         url = self._generate_url(
-            f"competitions/{competition_id}/leagueTable", matchday)
+            f"competitions/{competition}/leagueTable", matchday)
         table = requests.get(url, headers=self.headers).json()
 
         return Table(table)
 
-    def competition_fixtures(self, competition_id, matchday=None,
+    def competition_fixtures(self, competition, matchday=None,
                              time_frame=None):
         """
-        Returns a list of Fixture objects made from the fixtures of the
-        competition with the given ID, on the given matchday and/or time frame.
+        Returns a list of Fixture objects made from the fixtures of the given
+        competition.
         """
         # Allow users to use both id or name
-        if isinstance(competition_id, str):
+        if isinstance(competition, str):
             try:
-                competition_id = LEAGUE_CODE[competition_id]
+                competition = LEAGUE_CODE[competition]
             except KeyError as error:
                 return error
 
@@ -151,7 +150,7 @@ class Football(object):
             query_params["timeFrame"] = time_frame
 
         url = self._generate_url(
-            f"competitions/{competition_id}/fixtures", query_params)
+            f"competitions/{competition}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
 
         return [Fixture(fixture) for fixture in fixtures["fixtures"]]
@@ -159,8 +158,7 @@ class Football(object):
     def fixtures(self, time_frame=None, league_code=None):
         """
         Returns a list of Fixture objects made from the fixtures across either
-        all competitions or the league with the given code in the given time
-        frame.
+        all competitions or a specific league.
         """
         query_params = {}
         # Error checking for query parameter time_frame
@@ -190,11 +188,18 @@ class Football(object):
         fixture = requests.get(url, headers=self.headers).json()
         return Fixture(fixture["fixture"])
 
-    def team_fixtures(self, team_id, season=None, time_frame=None, venue=None):
+    def team_fixtures(self, team, season=None, time_frame=None, venue=None):
         """
         Returns a list of Fixture objects made from the fixtures of the team
         with the given ID, in a certain season, time frame or venue.
         """
+        # If string try to convert to ID
+        if isinstance(team, str):
+            if team.lower() in TEAM_ID.keys():
+                team = TEAM_ID[team.lower()]
+            else:
+                raise ValueError(f"{team} is not a valid team or ID!")
+
         query_params = {}
         # Error checking for query parameter season
         if season:
@@ -218,28 +223,42 @@ class Football(object):
                 raise ValueError("venue is invalid.")
             query_params["venue"] = venue
 
-        url = self._generate_url(f"teams/{team_id}/fixtures", query_params)
+        url = self._generate_url(f"teams/{team}/fixtures", query_params)
         fixtures = requests.get(url, headers=self.headers).json()
 
         return [Fixture(fixture) for fixture in fixtures["fixtures"]]
 
-    def team(self, team_id):
+    def team(self, team):
         """
-        Returns a Team object made from the team with the given ID.
+        Returns a Team object made from the given team.
         """
-        url = self._generate_url(f"teams/{team_id}")
+        # If string try to convert to ID
+        if isinstance(team, str):
+            if team.lower() in TEAM_ID.keys():
+                team = TEAM_ID[team.lower()]
+            else:
+                raise ValueError(f"{team} is not a valid team or ID!")
+
+        url = self._generate_url(f"teams/{team}")
         team = requests.get(url, headers=self.headers).json()
         return Team(team)
 
-    def players(self, team_id):
+    def players(self, team):
         """
         Returns a list of Player objects made from players playing for the team
         with the given ID.
         """
-        url = self._generate_url(f"teams/{team_id}/players")
+        # If string try to convert to ID
+        if isinstance(team, str):
+            if team.lower() in TEAM_ID.keys():
+                team = TEAM_ID[team.lower()]
+            else:
+                raise ValueError(f"{team} is not a valid team or ID!")
+
+        url = self._generate_url(f"teams/{team}/players")
         players = requests.get(url, headers=self.headers).json()
 
-        return [Player(player, team_id) for player in players["players"]]
+        return [Player(player, team) for player in players["players"]]
 
     def _generate_url(self, action, query_params=None):
         """
